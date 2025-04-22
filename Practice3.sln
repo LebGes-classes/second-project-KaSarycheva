@@ -1,31 +1,96 @@
-﻿
-Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.13.35913.81 d17.13
-MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Practice3", "Practice3\Practice3.vcxproj", "{1F365A46-97B6-494F-9F91-D83C7D5CFA03}"
-EndProject
-Global
-	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|x64 = Debug|x64
-		Debug|x86 = Debug|x86
-		Release|x64 = Release|x64
-		Release|x86 = Release|x86
-	EndGlobalSection
-	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{1F365A46-97B6-494F-9F91-D83C7D5CFA03}.Debug|x64.ActiveCfg = Debug|x64
-		{1F365A46-97B6-494F-9F91-D83C7D5CFA03}.Debug|x64.Build.0 = Debug|x64
-		{1F365A46-97B6-494F-9F91-D83C7D5CFA03}.Debug|x86.ActiveCfg = Debug|Win32
-		{1F365A46-97B6-494F-9F91-D83C7D5CFA03}.Debug|x86.Build.0 = Debug|Win32
-		{1F365A46-97B6-494F-9F91-D83C7D5CFA03}.Release|x64.ActiveCfg = Release|x64
-		{1F365A46-97B6-494F-9F91-D83C7D5CFA03}.Release|x64.Build.0 = Release|x64
-		{1F365A46-97B6-494F-9F91-D83C7D5CFA03}.Release|x86.ActiveCfg = Release|Win32
-		{1F365A46-97B6-494F-9F91-D83C7D5CFA03}.Release|x86.Build.0 = Release|Win32
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {F6C466BB-B57B-4424-A93B-0943A77583A8}
-	EndGlobalSection
-EndGlobal
+#include <iostream>
+#include <string>
+#include <algorithm>
+using namespace std;
+
+// 1 задание
+int main() {
+    string X, Y;
+
+    getline(cin, X);
+    getline(cin, Y);
+
+    int length = length_LCS(X, Y, X.length(), Y.length());
+    string subsequence = subsequence_LCS(X, Y);
+
+    return 0;
+}
+
+using namespace std;
+
+// длина LCS
+int length_LCS(const string& X, const string& Y, int m, int n) {
+    // если перебрали до конца какой-то одной из строк
+    if (m == 0 || n == 0) {
+        return 0;
+    }
+
+    // буквы совпадают
+    if (X[m - 1] == Y[n - 1]) {
+        return 1 + length_LCS(X, Y, m - 1, n - 1);
+    }
+    // не совпадают
+    else {
+        return max(length_LCS(X, Y, m, n - 1),
+            length_LCS(X, Y, m - 1, n));
+    }
+}
+
+// подпоследовательность
+string subsequence_LCS(const string& X, const string& Y) {
+    int m = X.length();
+    int n = Y.length();
+    int length = length_LCS(X, Y, m, n);
+
+    // lcs подпоследовательность
+    string lcs;
+    lcs.resize(length);
+    int index = length - 1;
+
+    // находим lcs
+    int i = m, j = n;
+    while (i > 0 && j > 0) {
+        if (X[i - 1] == Y[j - 1]) {
+            lcs[index] = X[i - 1];
+            i--;
+            j--;
+            index--;
+        }
+        else if (length_LCS(X, Y, i - 1, j) > length_LCS(X, Y, i, j - 1)) {
+            i--;
+        }
+        else {
+            j--;
+        }
+    }
+
+    return lcs;
+}
+
+
+// 2 задание
+int main() {
+    int n, k;
+    cin >> n >> k;
+
+    int result = bin_coeff(n, k);
+
+    return 0;
+}
+// биномиальный коэффициент
+int bin_coeff(int n, int k) {
+    if (k == 0) {
+        return 1;
+    }
+    return factorial(n) / (factorial(k) * factorial(n - k));
+}
+
+// факториал
+int factorial(int x) {
+    if (x == 0) {
+        return 1;
+    }
+    else {
+        return x * factorial(x - 1);
+    }
+}
